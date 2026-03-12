@@ -7,6 +7,7 @@ from backend.app.chunking import split_text_into_chunks
 from backend.app.vector_store import create_vector_store
 from backend.app.retriever import retrieve_relevant_chunks
 from backend.app.embedding import create_embeddings
+from backend.app.llm_service import generate_answer
 
 
 
@@ -61,10 +62,12 @@ async def ask_question(question: str):
     if vector_db is None:
         return {"error": "No document uploaded yet"}
 
-    # Retrieve relevant chunks
     relevant_chunks = retrieve_relevant_chunks(question, vector_db, chunks)
+
+    answer = generate_answer(question, relevant_chunks)
 
     return {
         "question": question,
-        "relevant_chunks": relevant_chunks
+        "answer": answer,
+        "context_used": relevant_chunks
     }
